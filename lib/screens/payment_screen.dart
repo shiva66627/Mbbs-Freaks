@@ -29,13 +29,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   void _openCheckout() {
     var options = {
-      'key': 'rzp_test_RGIGHHWOeG9w3I', // 🔑 Replace with your Test Key ID
-      'amount': widget.amount, // in paise
+      'key': 'rzp_test_RGfTAuTohoJpta', // 🔑 Replace with Live Key in production
+      'amount': widget.amount, // in paise (100 = ₹1)
       'name': 'MBBS Freaks',
       'description': widget.pdfTitle,
       'prefill': {
         'contact': '9876543210',
         'email': 'testuser@gmail.com',
+      },
+      'method': {
+        'upi': true,         // ✅ Enable UPI
+        'card': true,
+        'netbanking': true,
+        'wallet': true,
       },
       'external': {
         'wallets': ['paytm']
@@ -45,25 +51,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
     try {
       _razorpay.open(options);
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("Razorpay error: $e");
     }
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("SUCCESS: ${response.paymentId}")),
+      SnackBar(content: Text("✅ SUCCESS: ${response.paymentId}")),
     );
+    // TODO: Call your backend API to verify payment before unlocking premium
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("ERROR: ${response.message}")),
+      SnackBar(
+        content: Text("❌ ERROR: ${response.code} - ${response.message}"),
+      ),
     );
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("EXTERNAL WALLET: ${response.walletName}")),
+      SnackBar(content: Text("Wallet Selected: ${response.walletName}")),
     );
   }
 

@@ -188,22 +188,30 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Admin Icon
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.red[600],
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.admin_panel_settings,
-                  size: 60,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 24),
+             // inside your build() → Column (replace only the Container with Icon)
+
+              // Admin Icon (Replaced with Logo)
+            
+              
+ // ✅ Circular logo only
+CircleAvatar(
+  radius: 60, // adjust size
+  backgroundColor: Colors.transparent, // no background color
+  child: ClipOval(
+    child: Image.asset(
+      "assets/LOGGOS.jpeg",
+      fit: BoxFit.cover,
+      width: 250,  // must match 2 * radius
+      height: 250, // must match 2 * radius
+    ),
+  ),
+),
+
+
+              
 
               Text(
-                "Admin Panel",
+                "MBBS FREAKS",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

@@ -41,21 +41,20 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         _error = null;
       });
 
-      // Check if file is already downloaded
+      // ✅ Check if already downloaded
       final isDownloaded = await _driveService.isFileDownloaded(widget.fileName);
-      
+
       if (isDownloaded) {
         _localFilePath = await _driveService.getLocalFilePath(widget.fileName);
       } else {
-        // Try to download the PDF
-        // First try with authentication
-        String? filePath = await _driveService.downloadPdf(widget.fileId, widget.fileName);
-        
-        // If authentication fails, try public download
-        if (filePath == null) {
-          filePath = await _driveService.downloadPublicPdf(widget.fileId, widget.fileName);
-        }
-        
+        // ✅ Try downloading
+        String? filePath =
+            await _driveService.downloadPdf(widget.fileId, widget.fileName);
+
+        // fallback → public link
+        filePath ??=
+            await _driveService.downloadPublicPdf(widget.fileId, widget.fileName);
+
         if (filePath != null) {
           _localFilePath = filePath;
         } else {
@@ -67,7 +66,6 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         }
       }
 
-      // Verify file exists
       if (_localFilePath != null && File(_localFilePath!).existsSync()) {
         setState(() {
           _isLoading = false;
@@ -132,11 +130,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red,
-            ),
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(
               _error!,
@@ -159,15 +153,16 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       );
     }
 
+    // ✅ Main PDF Viewer
     return PDFView(
       filePath: _localFilePath!,
       enableSwipe: true,
-      swipeHorizontal: false,
-      autoSpacing: false,
-      pageFling: false,
+      swipeHorizontal: false, // vertical scrolling
+      autoSpacing: true, // ✅ keeps each page centered with spacing
+      pageFling: true,
       pageSnap: true,
       defaultPage: _currentPage,
-      fitPolicy: FitPolicy.BOTH,
+      fitPolicy: FitPolicy.BOTH, // ✅ scale width & height to center
       preventLinkNavigation: false,
       onRender: (pages) {
         setState(() {
@@ -184,12 +179,6 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         setState(() {
           _error = 'Error on page $page: $error';
         });
-      },
-      onViewCreated: (PDFViewController pdfViewController) {
-        // PDF view created, you can save the controller if needed
-      },
-      onLinkHandler: (String? uri) {
-        // Handle link clicks if needed
       },
       onPageChanged: (int? page, int? total) {
         setState(() {

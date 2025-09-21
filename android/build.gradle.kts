@@ -1,4 +1,4 @@
-// Repositories for all projects
+// ✅ Repositories for all projects
 allprojects {
     repositories {
         google()
@@ -23,7 +23,7 @@ subprojects {
 // ✅ Required for Firebase (Google Services)
 buildscript {
     repositories {
-        google()        // 🔑 This was missing
+        google()
         mavenCentral()
     }
     dependencies {
@@ -35,9 +35,8 @@ buildscript {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
-// Use a consistent Java toolchain for all modules
 
-
+// ✅ Use a consistent Java toolchain for all modules
 subprojects {
     plugins.withId("java") {
         extensions.configure<JavaPluginExtension>("java") {
